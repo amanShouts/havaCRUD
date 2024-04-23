@@ -24,6 +24,7 @@ const createUser = async (req, res) => {
     const saltRounds = 10;
     const hashPassword = bcrypt.hashSync(password, saltRounds);
     const user = await User.create({ username, name, age, email, createdAt: new Date(), password: hashPassword })
+      .select({ password: 0, __v: 0, _id: 0, createdAt : 0 });
 
     if (user) {
       return res.status(200).json({ msg: "User created successfully", data: user });
@@ -60,13 +61,13 @@ const getAllUsers = async (req, res, next) => {
 const getUser = async (req, res, next) => {
   const user = req.user;
   try {
-    const users = await User.find({ email : user.email  });
-    const user = users[0]
+    const result = await User.findOne({ email: user.email });
+    const fullUser = result;
     const cleanData = {
-      username: user.username,
-      name: user.name,
-      email: user.email,
-      age: user.age
+      username: fullUser.username,
+      name: fullUser.name,
+      email: fullUser.email,
+      age: fullUser.age
     }
     res.status(200).json({ msg: 'Success', data: cleanData })
   }
@@ -77,16 +78,16 @@ const getUser = async (req, res, next) => {
 
 const updateUser = async (req, res, next) => {
   const user = req.user;
-  const {name, age} = req.body;
-  try{
-    const result = await User.findOneAndUpdate({email : user.email}, {name : name, age : age}, {new : true})
-      .select({password : 0, __v : 0, _id : 0, createdAt : 0});
-    if(result){
-      res.status(200).json({msg : 'Update Success', data : result})
+  const { name, age } = req.body;
+  try {
+    const result = await User.findOneAndUpdate({ email: user.email }, { name: name, age: age }, { new: true })
+      .select({ password: 0, __v: 0, _id: 0, createdAt: 0 });
+    if (result) {
+      res.status(200).json({ msg: 'Update Success', data: result })
     }
   }
-  catch(error){
-    res.status(500).json({msg : 'Server Error',})
+  catch (error) {
+    res.status(500).json({ msg: 'Server Error', })
   }
 }
 
