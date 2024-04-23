@@ -1,21 +1,32 @@
 const express = require('express');
-const { heathRouter } = require('./routes/health.route');
-const PORT = 3000
+const cors = require('cors');
+
+const { userRouter } = require('./routes/user.route');
+const { connectDb } = require('./config/db');
+
+const PORT = 3000;
+
 app = express()
 
+app.use(cors())
 app.use(express.json());
 
-app.use("/health", heathRouter) ;
+app.use("/user", userRouter) ;
 
-console.log("outside")
+// to check if server is working 
 
 app.get("/", (req, res) => {
-    res.send("working")
+    res.send("Server Working :)")
 })
+
+//to check if db is connected
 
 app.listen(PORT, (err) =>{
     if(err){
-        console.log(error, " error")
+        console.log("Error in Starting Server -> ", error)
     }
-    console.log("Server started ", PORT)
+    connectDb().then((res) =>{
+        console.log("Mongodb Connected!")
+    })
+    console.log(`Server started at http://localhost:${PORT}/`)
 })
