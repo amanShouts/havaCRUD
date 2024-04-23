@@ -1,19 +1,31 @@
 var jwt = require('jsonwebtoken');
+const dotenv = require("dotenv");
 
-const JWT_PRIVATE_KEY = 'wewewewrqwrqxcxzcxzcdcdicjizxncivndoidsnv'
+dotenv.config();
 
-const generateAuthToken = (username, email, name) => {
-    // const {username, email, name, age} = req.body;
+const JWT_SECRET = process.env.JWT_SECRET
+
+const generateAuthToken = ( email, password, username, name) => {
     const user = {
         email,
+        password,
+        username,
         name
     }
-    const token = jwt.sign( user, JWT_PRIVATE_KEY, { algorithm: 'RS256' });
-    console.log(token, " token from JWT")
+    const token = jwt.sign( user, JWT_SECRET);
     return token;
 }
 
 const verifyAuth = (req, res, next) => {
-    
-    next();
+    const bearer = req.headers['authorization'];
+    const token = bearer.split(" ")[1];
+    var user = jwt.verify(token, JWT_SECRET);
+    if(user){
+        req.user = user;
+        next();
+    }
+    else
+        return res.status(401).json({msg : 'Action/User Not Authorized'})
 }
+
+module.exports = {verifyAuth , generateAuthToken}

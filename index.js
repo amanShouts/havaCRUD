@@ -19,7 +19,6 @@ app.get("/", (req, res) => {
     res.send("Server Working :)")
 })
 
-//to check if db is connected
 
 app.listen(PORT, (err) =>{
     if(err){
