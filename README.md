@@ -1,5 +1,7 @@
 # Hava Havai CRUD api
 
+Implemented with - Joi validation | JWT authetication | Mongoose 
+
 ## Apis implemented - 
 
 ### Autheticated routes - (takes JWT token)
